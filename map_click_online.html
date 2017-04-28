@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>腾讯地图周边POI推荐服务DEMO</title>
+  <style type="text/css" src="style/autocomplete.min.css"></style>
+  <style type="text/css">
+    body,html,ul, li, h1, p, button,input{ 
+      margin:0; 
+      padding:0; 
+    }
+    html{
+      width: 100%;
+      height: 100%;
+    }
+    body {
+      font-family: "Microsoft YaHei",Helvetica,  sans-serif;
+      overflow: auto;
+      font-size: 14px;
+      min-width:1200px;
+      width: 100%;
+    }
+
+     
+    h3 {
+      margin: 0;
+      padding: 0;
+    }
+
+    .wrap {
+      min-width: 1200px;
+      margin: 0 auto;
+      font-size: 14px;
+      min-height: 100px;
+    }
+    @media(min-width:1200px){
+      .wrap{
+         padding: 0 10px 20px;
+      }
+    }
+    @media(min-width:1300px){
+      .wrap{
+         padding: 0 30px 20px;
+      }
+    }
+    h2 {
+      min-width: 1200px;
+      padding: 0 30px;
+      margin: 0 auto;
+      color: #333;
+      position: relative;
+      line-height: 78px;
+      text-align: center;
+      /* padding-left: 160px; */
+      font-size: 20px;
+      font-weight: 700;
+      border-bottom:1px solid #ccc;
+    }
+
+    h2 .logo {
+      display: block;
+      position: absolute;
+      left: 0;
+      top:21px;
+      width: 150px;
+      height: 36px;
+      background: url(http://open.map.qq.com/web/img/logo.png) no-repeat left center;
+    }
+
+@media(min-width:1500px){
+    .wrap{
+      padding:0 60px 20px;
+    }
+}
+    .highlight {
+      color: #f2011a;
+    }
+
+    
+    h3, h4, p {
+      padding: 0;
+      margin: 0 0 10px 0;
+    }
+
+    h3 {
+      text-align: center;
+      background: #f6f6f6;
+      margin: 0 0 0 0;
+      border: 1px solid #C3D2E5;
+      color: #5c9ad0;
+      height: 30px;
+      line-height: 30px;
+      font-size: 15px;
+      background: #f3f3f3;
+      border: 1px solid #d4d4d4;
+    }
+
+    #root {
+      height: 500px;
+      border: 1px solid #5c9ad0;
+      margin-top:10px;
+    }
+
+    #click-arg {
+      height:1250px;
+      border: 1px solid #6d9eff;
+    }
+
+    #click-arg h4 {
+      margin-left: 20px;
+      margin-top: 5px;
+    }
+
+    #click-arg p {
+      margin-left: 40px;
+    }
+
+    .formula {
+      color: #8F4586;
+      font-weight: bold;
+    }
+
+    .result {
+      color: #FF0000;
+    }
+
+    .adjust-arg {
+      color: #2828FF;
+      font-weight: bold;
+    }
+
+    .variable {
+      color: #FF5809;
+    }
+
+    .condition {
+      color: #00BB00;
+    }
+
+    #click-debug-info {
+      height: 500px;
+      border: 1px solid #5c9ad0;
+      overflow: auto;
+    }
+
+    #click-debug-info .num {
+      position: absolute;
+      display: block;
+      width: 25px;
+      height: 20px;
+      text-align: center;
+      line-height: 20px;
+      background: #b5cbe8;
+      color: #fff;
+      left: 0;
+      top: 0;
+      border-radius: 2px;
+    }
+
+    #click-debug-info h4 {
+      padding-left: 35px;
+      position: relative;
+      color: #4e91ec;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      line-height: 20px;
+      width: 500px;
+      margin-left: 20px;
+    }
+
+    #click-debug-info p {
+      margin-left: 30px;
+      margin-top: 10px;
+      margin-right: 30px;
+    }
+
+    .mapInfo { 
+      overflow: hidden;
+      position: relative;
+      min-height: 100px;
+      margin-top:50px;
+    }
+
+    .mapInfo .name {
+      color: #4e91ec;
+      margin-right: 10px;
+    }
+
+    .clearFix {
+      overflow: hidden;
+      *zoom: 1;
+    }
+
+    .mapInfo .row {
+      clear: both;
+    }
+
+    .mapInfo .title {
+      width: 80px;
+      font-weight: 700;
+    }
+
+    .mapInfo .title1 {
+      width: 75px;
+      font-weight: 700;
+    }
+
+    .mapInfo .column {
+      float: left;
+      *display: inline;
+      *zoom: 1;
+    }
+
+    .mapInfo .columnWide {
+      width: 260px;
+    }
+
+    .poi{
+      clear: both;
+    }
+
+    .poiFilter {
+      margin-bottom: 30px;
+      margin-top:15px;
+      text-align: center;
+    }
+    .poiFilter a {
+      text-decoration: none;
+      color: #5c9ad0;
+      display: inline-block;
+      width: 190px;
+      text-align: center;
+      height: 23px;
+      line-height: 23px;
+      margin-top: -1px;
+      background: #f3f3f3;
+      border: 1px solid #d4d4d4;
+      font-size:15px;
+    }
+    .poiFilter a:hover {
+      text-decoration: none;
+      color: #fff;
+      background: #5c9ad0;
+      border: 1px solid #1a86e3;
+    }
+
+    .poiFilter a.active {
+      color: #fff;
+      background: #5c9ad0;
+      border:1px solid #5c9ad0;
+    }
+
+/*     #MQPoiFilter {
+  margin-bottom: 15px;
+  text-align: center;
+}
+#MQPoiFilter a {
+  text-decoration: none;
+  color: #5080AB;
+  display: inline-block;
+  border: 1px solid #C3D2E5;
+  background: #eeeeee;
+  width: 240px;
+  text-align: center;
+  height: 20px;
+  line-height: 20px;
+}
+
+#MQPoiFilter a:hover {
+  text-decoration: none;
+  color: #eeeeee;
+  background: #5080AB;
+}
+
+#MQPoiFilter a.active {
+  color: #eeeeee;
+  background: #5080AB;
+}
+ */
+    .poi1{
+      width: 100%;
+      overflow: auto; 
+      float: left;
+    }
+/*     .poi2{
+  width: 21%;
+  overflow: auto;
+  float: right; 
+} */
+
+    #poi {
+      padding-bottom: 50px;
+    }
+
+    .mapView {
+      width:100%;
+      min-height: 100px;
+    }
+
+    .search {
+      margin: 26px 0 40px;
+      font-family: "Microsoft Yahei";
+      color:#333;
+    }
+    .search .searchBox{
+      margin-bottom:30px;
+      text-align: center;
+    }
+    .searchBox .searchIn{
+      display: inline-block;
+      margin:0 16px;
+      font-size:15px;
+    }
+    .searchBox  .searchIn:first-child{
+      margin-left:0;
+    }
+    .searchBox select{
+      padding:4px 10px;
+      border-radius: 2px;
+      cursor: pointer;
+    }
+    .searchIn select, .searchIn input{
+      font-size:15px;
+    }
+    .searchBox input {
+      padding:4px 10px;
+      border:1px solid #ccc;
+      border-radius: 2px;
+      min-width:40px;
+      cursor: pointer;
+    }
+    .searchBox input[type='button'],#share-btn{
+      padding:4px 16px;
+      background:#5c9ad0;
+      border:1px solid #1a86e3;
+      color:#fff;
+      font-weight: 400;
+    }
+    #share-btn{
+      padding:3px 16px;
+      border-radius: 2px;
+    }
+/* autocomplete */
+#ui-id-1{
+  background:rgba(255,255,255,0.9);
+  filter:alpha(opacity=90);
+  border:1px solid #dedede;
+  z-index: 1000;
+  position: absolute;
+  top: 26px;
+  left:0;
+  width: 300px;
+  display: none;
+}
+#ui-id-1 li{
+  margin:8px; 
+  cursor: pointer;
+}
+#ui-id-1 li.autoli_cur{
+  background:#2a8de2;
+  color:#fff!important;
+}
+#ui-id-1 li.autoli_cur span{
+  color: #fff!important;
+}
+#ui-id-1 li span{
+  font-size:12px;
+  color:#666;
+}
+#ui-id-1 li em,#ui-id-1 li i{
+  display: none;
+}
+/* autocomplete over*/
+    .search .text {
+      width: 140px;
+    }
+
+    .search .radio {
+      vertical-align: -2px;
+    }
+    .search .radio1 {
+      margin-top: 4px;
+    }
+
+    /* .search a {
+      display: inline-block;
+      text-decoration: none;
+      border: 1px solid #8c1e10;
+      background: #ea5635;
+      color: #fff;
+      cursor: pointer;
+      width: 70px;
+      height: 25px;
+      line-height: 25px;
+      text-align: center;
+      margin-right:50px;
+      outline: none;
+    }
+    
+    .search a:hover {
+      text-decoration: none;
+    } */
+
+    .poiList {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #5c9ad0;
+      margin-bottom: 10px;
+    }
+    #poilist_mddiv{
+      position: fixed;
+      top: 30%;
+      left: 15%;
+      width:66%;
+      padding:18px 30px;
+      display: none;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .poiList  h4 {
+      padding-left: 35px;
+      position: relative;
+      color: #4e91ec;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      line-height: 20px;
+      width: 1200px;
+    }
+
+    .poiList .num {
+      position: absolute;
+      display: block;
+      width: 25px;
+      height: 20px;
+      text-align: center;
+      line-height: 20px;
+      background: #b5cbe8;
+      color: #fff;
+      left: 0;
+      top: 0;
+      border-radius: 2px;
+    }
+
+    .poiList .title {
+      
+    }
+
+    .poiList .poi-base-info {
+      font-size: 15px;
+      color: #00DD00;
+    }
+
+    .poiList .tr-title {
+      font-size: 15px;
+      font-weight: bold;
+      border:1px solid #5c9ad0;
+      margin-top:-1px;
+      border-bottom:1px solid #102538;
+    }
+
+    .poiList .tr-item {
+      font-size: 15px;
+      border-bottom:1px solid #102538;
+      border-left:1px solid #5c9ad0;
+      border-right:1px solid #5c9ad0;
+    }
+
+    .poiList .mq-click-info {
+      font-size: 15px;
+      color: #FF3333;
+    }
+
+    .poiList table {
+      width: 100%;
+      font-size: 12px;
+      border-collapse: collapse;
+    }
+
+    .poiList table td {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      padding-right: 5px;
+    }
+
+    .poiList .bold {
+      font-weight: bold;
+      line-height: 30px;
+    }
+
+    .poiList .addr {
+      color: #555;
+    }
+
+    .td-item {
+      border-left: 1px solid;
+    }
+
+    .td-item-base {
+      background-color: #FFECF5;
+    }
+
+	.td-item-click {
+	  background-color: #FFE6D9;
+	}
+  
+    .td-item-merge {
+      background-color: #CAFFFF;
+    }
+
+    .td-item-rt {
+      background-color: #FFF0AC;
+    }
+
+    .td-item-rw {
+      background-color: #F1E1FF;
+    }
+
+    .td-item-score {
+      background-color: #EBD6D6;
+    }
+
+    .powered-by {
+      display: block;
+      text-align: center;
+      color: #2A9CFF;
+      text-decoration: none;
+      margin: 20px;
+    }
+
+    .pg{
+      width: 100%;
+      margin-bottom: 10px;
+      margin-right: 10%;
+      text-align: center;
+    }
+
+    ul{
+      list-style: none outside none;
+    }
+
+    .pg ul{
+      margin: 0 auto;
+      padding: 12px 0 12px 16px;
+      display: inline-block;
+    }
+
+    .pg ul li{
+      float: left;
+      margin-right: 4px;
+      text-align: center;
+      font-size:15px;
+    }
+
+    .pg ul li.nohref{
+      border: 1px solid #DDDDDD;
+      color: #8B8B8B;
+      padding: 2px 4px;
+      text-align: center;
+      font-family: 'Microsoft Yahei';
+    }
+
+    .pg ul li.on{
+      background-color: #5c9ad0;
+      border: 1px solid #5c9ad0;
+      color: #FFFFFF;
+      font-weight: bold;
+      padding: 2px 6px;
+      text-align: center;
+      font-family: 'Microsoft Yahei';
+    }
+
+    .pg ul li a{
+      border: 1px solid #5c9ad0;
+      color: #5c9ad0;
+      float: left;
+      padding: 2px 6px;
+      text-align: center;
+      font-family: 'Microsoft Yahei';
+    }
+
+    .clear {
+      clear: both;
+    }
+
+    a{
+      color: #3366CC;
+      text-decoration: none;
+    }
+table{
+  width: 100%;
+  border:0px solid #ebebeb;
+  border-collapse:collapse; 
+  font-family:"Microsoft Yahei"; 
+  border-spacing:0;
+}
+table thead{
+  cursor: pointer;
+}
+table tbody{
+  background: #f7f7f7;
+}
+table tr th{
+  /* border:1px solid #a8d8ef; */
+  padding:7px 10px; 
+  font-size:15px; 
+  font-weight:bolder; 
+  color:#333;
+  text-align:center; 
+  background:#d9edf7; 
+}
+table tr td{
+ /*  border:1px solid #a8d8ef;  */
+  background: #fff;
+  padding:7px 10px;
+  font-size:15px;   
+  color:#111;  
+  font-family: 'Microsoft Yahei';
+  text-align:center;
+}
+  </style>
+</head>
+<body>
+  <div class="wrap clearFix">
+    <div class="mapView">
+    <h2><span class="logo"></span><span>周边POI推荐服务点击优化调试DEMO</span></h2>
+      <div class="search">
+        <div class="searchBox">
+          <div class="searchIn">
+              业务类型：<select name="" id="form_yw">
+                  <option value="5">朋友圈签到</option>
+                  <option value="4">手Q共享位置</option>
+                  <option value="0">空间签到</option>
+                  <option value="2">微信发送位置</option>
+                  <option value="1">QQ群组</option>
+              </select>
+          </div>
+          <div class="searchIn" style="position:relative">
+              经纬度/名称: <input id="search_lng_lat" type="text" class="text" value="116.403765:39.914850">
+               <ul class="ui-autocomplete" id="ui-id-1" tabindex="0">
+                 <li></li>
+                 <li></li>
+                 <li></li>
+                 <li></li>
+                 <li></li>
+                 <li></li>
+                 <li></li>
+                 <li></li>
+                 <li></li>
+                 <li></li>
+              </ul>
+          </div>
+          <div class="searchIn">
+              半径: <input type="text" style="width:40px;" value="1000" id="form_radius">
+          </div>
+          <!-- <div class="searchIn">
+              精准度: <input type="text" style="width:40px;" value='100' id="form_jzd" readonly="readonly">
+          </div> -->
+          <div class="searchIn">
+              IP: <select name="" id="form_ip" style='width:170px;'></select>
+          </div>
+          <div class="searchIn">
+              <input type="button" value="查 询" id="form_search">
+          </div>
+          <div class="searchIn">
+            <a  id="share-btn" href="javascript:;" data-clipboard-target="share-btn" value="">复制链接</a>
+          </div>
+      </div>
+      <div class="searchBox">
+          <div class="searchIn">
+              MD: <input type="text" id="form_md">
+          </div>
+          <div class="searchIn">
+              <input type="button" value="查 询" id="form_searchmd">
+          </div>
+          
+      </div>
+      <div id="md-info">
+      </div>
+<!-- 
+      <p><span >手Q位置共享: </span><input type="radio" value="4" name="type" class="radio" > <span>签到: </span><input type="radio" value="0" name="type" class="radio"> <span>发送位置: </span><input type="radio" value="2" name="type" class="radio"> <span>朋友圈签到</span><input type="radio" value="5" name="type" class="radio"> <span class="highlight">群组: </span><input type="radio" value="1" name="type" class="radio" style="margin-right:112px;" checked> 精确度: <select disabled="true", style="margin-right:30px;"><option value="1">100</option></select><a id="share-btn" href="javascript:;" data-clipboard-target="share-btn">share</a><select name="" id="banben_sel" style="float:right;min-width:60px;" onchange="search();"></select><span style="float:right;">版本选择: </span></p>
+              <p>经纬度: <input id="" type="text" class="text" value="116.403765:39.914850">半径: <input type="text" id="radius" value="2000" class="text" style="width:60px;"><a href="javascript:search(this);">search</a>输入地址: <input type="text" id="search-addr"><a href="javascript:findAddr();">查询</a><input type="radio" value="1" name="resident" class="radio radio1" style="float:right;"><span style="float:right;">非常住 </span><input type="radio" value="0" name="resident" class="radio radio1" style="float:right;" checked><span style="float:right;">常住</span></p> -->
+      </div>
+      <div id="root"></div>
+      <div id="mapInfo" class="mapInfo">
+        <div class="poi">
+          <h3>附近POI列表</h3>
+          <div id="poiFilter" style="display:none;" class="poiFilter">
+            <a href="javascript:;" data-value="0">全部</a>
+            <a href="javascript:;" data-value="1">校园</a>
+            <a href="javascript:;" data-value="2">小区</a>
+            <a href="javascript:;" data-value="3">商用楼</a>
+            <a href="javascript:;" data-value="4">休闲娱乐</a>
+          </div>
+      	  <div id="MQPoiFilter" style="display:none;" class="poiFilter">
+                  <a href="javascript:;" data-value="0">全部</a>
+                  <a href="javascript:;" data-value="1">写字楼</a>
+                  <a href="javascript:;" data-value="2">小区</a>
+                  <a href="javascript:;" data-value="3">商家</a>
+      	  </div>
+          <div id="poi" class="poi1"></div>
+        </div>
+      </div>
+      <div class="clear"></div>
+      <br/>
+      <div id="page" class="pg"></div>
+      <div class="clear"></div>
+      <br></br>
+      <div id="click-debug-info"></div>
+      <br></br>
+      <div id="click-arg">
+	<h3>点击参数设置</h3>
+	<h4>1. 距离衰减参数公式</h4>
+	<p><span class="result">fDistArg</span> = 1.0  <span class="condition">(fDistance < 100)</span></p>
+	<p><span class="result">fDistArg</span> = <span class="adjust-arg">fDistanceRatio</span> / <span class="formula">POWER(</span><span class="variable">fDistance, <span class="adjust-arg">fDistanceExp</span><span class="formula">)</span>  <span class="condition">(fDistance >= 100)</span></p>
+	<p>其中，<span class="result">fDistArg</span>为距离衰减参数, <span class="variable">fDistance</span>是用户定位点到某个分片中心点的距离，其他可配置参数:</p>
+	<p><span class="adjust-arg">fDistanceRatio</span>:<input type="text" id="distance-ratio" value="100" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fDistanceExp</span>:<input type="text" id="distance-exp" value="1.0" class="text" style="width:30px;margin-left:5px"></p>
+	<h4>2. 总点击量得分上限衰减公式</h4>
+	<p><span class="result">fTotallyClickArg</span> = 2 - <span class="formula">POWER(</span><span class="adjust-arg">fNormalizedTotallyClickBaseArg</span>, 1 / (<span class="variable">fMergeTotallyClickAmount</span> / <span class="adjust-arg">fNormalizedTotallyClickRatioArg</span> + 1)<span class="formula">)</span></p>
+	<p>其中，<span class="result">fTotallyClickArg</span>为总点击归一化得分上限，<span class="variable">fMergeTotallyClickAmount</span>为各分片merge后的点击总量, 可配置参数如下:</p>
+	<p><span class="adjust-arg">fNormalizedTotallyClickBaseArg</span>:<input type="text" id="normal-totally-click-base-arg" value="1.5" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fNormalizedTotallyClickRatioArg</span>:<input type="text" id="normal-totally-click-ratio-arg", value="100.0" class="text" style="width:40px;margin-left:5px;margin-right:20px;"></p>
+	<h4>3. 周点击量得分上限衰减公式</h4>
+	<p><span class="result">fWeeklyClickArg</span> = 2 - <span class="formula">POWER(</span><span class="adjust-arg">fNormalizedWeeklyClickBaseArg</span>, 1 / (<span class="variable">fMergeWeeklyClickAmount</span> / <span class="adjust-arg">fNormalizedWeeklyClickRatioArg</span> + 1)<span class="formula">)</span></p>
+	<p>其中，<span class="result">fWeeklyClickArg</span>为周点击归一化得分上限，<span class="variable">fMergeWeeklyClickAmount</span>为各分片merge后的点击总量, 可配置参数如下:</p>
+	<p><span class="adjust-arg">fNormalizedWeeklyClickBaseArg</span>:<input type="text" id="normal-weekly-click-base-arg" value="1.5" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fNormalizedWeeklyClickRatioArg</span>:<input type="text" id="normal-weekly-click-ratio-arg", value="100.0" class="text" style="width:40px;margin-left:5px;margin-right:20px;"></p>
+	<h4>4. 总点击率得分计算公式</h4>
+	<p><span class="result">fTotallyClickRateScore</span></p>
+	<p style="margin-left:100px">= 1 - <span class="adjust-arg">fTotallyClickRatePowRatioArg</span> * <span class="formula">POWER(</span><span class="adjust-arg">fTotallyClickRateBaseArg</span>, -(<span class="variable">fTotallyClickRate</span> * 100.0)/<span class="adjust-arg">fTotallyClickRateRatioArg</span><span class="formula">)</span></p>
+	<p>其中，<span class="result">fTotallyClickRateScore</span>为总点击率得分，<span class="variable">fTotallyClickRate</span>为用户当前所在分片的总点击率，可配置参数如下:</p>
+	<p><span class="adjust-arg">fTotallyClickRatePowRatioArg:</span><input type="text" id="totally-click-rate-pow-ratio-arg" value="0.6" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fTotallyClickRateBaseArg:</span><input type="text" id="totally-click-rate-base-arg" value="1.5" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fTotallyClickRateRatioArg:</span><input type="text" id="totally-click-rate-ratio-arg" value="1.7" class="text" style="width:30px;margin-left:5px;margin-right:20px;"></p>
+	<h4>5. 周点击率得分计算公式</h4>
+	<p><span class="result">fWeeklyClickRateScore</span></p>
+	<p style="margin-left:100px">= 1 - <span class="adjust-arg">fWeeklyClickRatePowRatioArg</span> * <span class="formula">POWER(</span><span class="adjust-arg">fWeeklyClickRateBaseArg</span>, -(<span class="variable">fWeeklyClickRate</span> * 100.0)/<span class="adjust-arg">fWeeklyClickRateRatioArg</span><span class="formula">)</span></p>
+	<p>其中，<span class="result">fWeeklyClickRateScore</span>为周点击率得分，<span class="variable">fWeeklyClickRate</span>为用户当前所在分片的周点击率，可配置参数如下:</p>
+	<p><span class="adjust-arg">fWeeklyClickRatePowRatioArg:</span><input type="text" id="weekly-click-rate-pow-ratio-arg" value="0.6" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fWeeklyClickRateBaseArg:</span><input type="text" id="weekly-click-rate-base-arg" value="1.5" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fWeeklyClickRateRatioArg:</span><input type="text" id="weekly-click-rate-ratio-arg" value="1.7" class="text" style="width:30px;margin-left:5px;margin-right:20px;"></p>
+	<h4>6. 点击量得分计算公式</h4>
+	<p><span class="result">fClickAmountScore</span></p>
+	<p style="margin-left:100px">= <span class="variable">fNormalizedTotallyClickAmount</span> * <span class="adjust-arg">fTotallyClickAmountScoreRatio</span> + <span class="variable">fNormalizeWeeklyClickAmount</span> * <span class="adjust-arg">fWeeklyClickAmountScoreRatio</p>
+	<p>其中，<span class="result">fClickAmountScore</span>为点击量得分，<span class="variable">fNormalizedTotallyClickAmount</span>为归一化的总点击得分，<span class="variable">fNormalizedWeeklyClickAmount</span>为归一化的周点击得分，可配置参数如下:</p>
+	<p><span class="adjust-arg">fTotallyClickAmountScoreRatio:</span><input type="text" id="totally-click-amount-score-ratio" value="0.3" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fWeeklyClickAmountScoreRatio</span><input type="text" id="weekly-click-amount-score-ratio" value="0.7" class="text" style="width:30px;margin-left:5px;margin-right:20px;"></p>
+	<h4>7. 点击率得分计算公式</h4>
+	<p><span class="result">fClickRateScore</span></p>
+	<p style="margin-left:100px">= <span class="variable">fTotallyClickRateScore</span> * <span class="adjust-arg">fTotallyClickRateScoreRatio</span> + <span class="variable">fWeeklyClickRateScore</span> * <span class="adjust-arg">fWeeklyClickRateScoreRatio</p>
+	<p>其中，<span class="result">fClickRateScore</span>为点击率得分，<span class="variable">fTotallyClickRateScore</span>为总点击率得分，<span class="variable">fWeeklyClickRateScore</span>为周点击得分，可配置参数如下:</p>
+	<p><span class="adjust-arg">fTotallyClickRateScoreRatio:</span><input type="text" id="totally-click-rate-score-ratio" value="0.3" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fWeeklyClickRateScoreRatio</span><input type="text" id="weekly-click-rate-score-ratio" value="0.7" class="text" style="width:30px;margin-left:5px;margin-right:20px;"></p>
+	<h4>8. 点击得分计算公式</h4>
+	<p><span class="result">fClickScore</span> = <span class="variable">fClickAmountScore</span> * <span class="adjust-arg">fClickAmountScoreRatioArg</span> + <span class="variable">fClickRateScore</span> * <span class="adjust-arg">fClickRateScoreRatioArg</span></p>
+	<p>其中，<span class="result">fClickScore</span>为点击得分，<span class="variable">fClickAmountScore</span>为点击量得分，<span class="variable">fClickRateScore</span>为点击率得分，可配置参数如下:</p>
+	<p><span class="adjust-arg">fClickAmountScoreRatioArg:</span><input type="text" id="click-amount-score-ratio-arg" value="0.3" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fClickRateScoreRatioArg:</span><input type="text" id="click-rate-score-ratio-arg" value="0.7" class="text" style="width:30px;margin-left:5px;margin-right:20px;"></p>
+	<h4>9. 点击得分与Base得分merge公式</h4>
+	<p><span class="result">fScore</span> = <span class="variable">fClickAmountScore</span> * <span class="adjust-arg">fClickAmountScoreRatio</span> + <span class="variable">fClickRateScore</span> * <span class="adjust-arg">fClickRateScoreRatio</span> + <span class="variable">fBaseScore</span> * <span class="adjust-arg">fBaseScoreRatio</span></p>
+	<p>其中，<span class="result">fScore</span>为点击得分和Base得分merge后的得分，<span class="variable">fClickAmountScore</span>为点击量得分，<span class="variable">fClickRateScore</span>为点击率得分，<span class="variable">fBaseScore</span>为Base得分，
+	<p>可配置参数如下:</p>
+	<p><span class="adjust-arg">fClickAmountScoreRatio:</span><input type="text" id="click-amount-score-ratio" value="0.2" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fClickRateScoreRatio:</span><input type="text" id="click-rate-score-ratio" value="0.4" class="text" style="width:30px;margin-left:5px;margin-right:20px;"><span class="adjust-arg">fBaseScoreRatio:</span><input type="text" id="base-score-ratio" value="0.4" class="text" style="width:30px;margin-left:5px;margin-right:20px;"></p>
+      </div>
+      <div><a href="javascript:;" class="powered-by">----------powered by 检索组----------</a></div>
+    </div>
+  </div>
+  <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+  <script src="js/ZeroClipboard.js" type="text/javascript"></script>
+  <script src="http://map.qq.com/api/js?v=2" type="text/javascript" charset="utf-8" ></script>
+  <script src="js/map_v2.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  window.onload = function(){
+    $("#search_lng_lat").autocomplete({
+      minLength: 0,
+      source: function( request, response ) {
+          if($('#search_lng_lat').val()!=''){
+                   $('#ui-id-1').css('display','block');
+                   var key_val=$('#search_lng_lat').val();
+                   $.ajax({
+                             type : "get",
+                             async : false,
+                             url :"http://apis.map.qq.com/ws/place/v1/suggestion", 
+                             data:{
+                               keyword:key_val,
+                               key:"WC4BZ-TFI24-M45UM-DI57V-SVUH3-LQFUV",
+                               output:"jsonp"
+                             },
+                             cache : false,
+                             dataType : "jsonp",
+                             jsonp: "cb",
+                             jsonpCallback:"QQMapLoader",
+                             success : function(json){
+                              if(json&&json.data&&json.data!=[]){
+                                 var title_list = json.data;
+                                 for(var i=0;i<title_list.length;i++){
+                                    $('#ui-id-1 li').eq(i).attr('class','');
+                                    $('#ui-id-1 li').eq(i).addClass(title_list[i].id);
+                                    $('#ui-id-1 li').eq(i).html(""+title_list[i].title+"<span>【"+title_list[i].province+"-"+title_list[i].city+"-"+title_list[i].district+"】</span><em>"+title_list[i].location.lat+','+title_list[i].location.lng+"</em>");
+                                 } 
+                              }
+                             },
+                             error:function(e){
+                                 console.log('请检查suggestion')
+                             },
+                             complete:function(){
+                               //autocom_li_keycode();
+                             }
+                   });
+            }
+            else{
+                $('#ui-id-1').css('display','none');
+            }
+        }
+
+})
+$('#search_lng_lat').click(function(){
+   $(this).select();
+})
+$('#radius').click(function(){
+   $(this).select();
+})
+$('#ui-id-1 li').click(function(){
+   var li_selected_html=$(this).html();
+   var li_selected_html_=li_selected_html.split("<")[0];
+   li_selected_html_=li_selected_html_.replace(/\s/g, '');
+   $('#search_lng_lat').val(li_selected_html_);
+   $('#search_lng_lat').attr('title',li_selected_html_);
+   $('#ui-id-1').css('display','none');
+   var poi=$(this).find('em').html();
+   var lat=poi.split(',')[0];
+   var lng=poi.split(',')[1];
+})
+$('#ui-id-1 li').mouseover(function(){
+  $(this).addClass('autoli_cur').siblings().removeClass('autoli_cur');
+  ui_id_li_curNum=$(this).index();
+})
+$('#form_search').click(function(){
+  $('#ui-id-1').css('display','none');
+  form_searchmd_btn = false;
+  var params={};
+  params.page = 1;
+  params.num = 20;
+  params.filter = 0;
+  params.type  = $('#form_yw').val();
+  console.log($('#form_ip'))
+  if($('#form_ip').val()==null){
+    alert('请选择IP值');
+    return false;
+  }else{
+     params.ip  = $('#form_ip').val().split(':')[0];
+  }
+ 
+  params.port  = $('#form_ip').val().split(':')[1];
+  params.bucket_id = '';
+  params.user_id = '';
+  params.debug_list = '';
+  debug_list = '';
+  num=20;
+  page = 1;
+  filter=0;
+  searchType = params.type;
+  ip = params.ip;
+  port = params.port;
+  bucket_id = '';
+  user_id = '';
+  filterObj.toggle();
+  if(!isNaN(Number($('#form_radius').val()))){
+    params.radius = Number($('#form_radius').val());
+    radius = params.radius;
+  }else{
+    alert('请输入正确的半径值！')
+    return false;
+  }
+/*  if(!isNaN(Number($('#form_jzd').val()))){
+    params.jzd = Number($('#form_jzd').val());
+  }else{
+    alert('请输入正确的精准度值！')
+    return false;
+  }*/
+   var lnglat_=$('#search_lng_lat').val();
+   lnglat_=lnglat_.replace(/\s/g, '');
+   var indexof1=lnglat_.indexOf(',');
+   var indexof2=lnglat_.indexOf(':');
+
+   if(indexof2==-1&&indexof1==-1){
+      poi_search_wenzi(lnglat_,params);
+   }else{
+      var pos;
+      if(lnglat_.indexOf(',')!==-1){
+         pos=lnglat_.split(",");
+      }
+      if(lnglat_.indexOf(':')!==-1){
+         pos=lnglat_.split(":");
+      }
+     var lat = pos[1];
+     var lng = pos[0];
+     params.lng = lng;
+     params.lat = lat;
+     search2 = params.lng;
+     search1 = params.lat;
+     console.log(params)
+     poiChange(params);
+     MapHelper.setMarkerPostion(lat, lng);
+     MapHelper.setCenter(lat, lng)
+   }
+})
+$('#form_searchmd').click(function(){
+   form_searchmd_btn = true;
+   var params = getParams();
+   if($('#form_md').val()==''){
+     alert('请输入md');
+     return false;
+   }else if($('#form_md').val()>0){
+     var md_list = $('#form_md').val();
+     params.debug_list = md_list;
+     debug_list = '';
+     console.log('md搜索')
+     console.log(params)
+     poiChange(params)
+   }else{
+     alert('请输入正确的md值');
+     return false;
+   }
+})
+$('#form_yw').change(function(){
+  console.log($(this).val())
+  var search_type = $(this).val();
+  searchType = search_type;
+  filterObj.toggle();
+  if(search_type==1){
+    $('#form_radius').val(2000);
+  }else if(search_type == 4 || search_type == 5){
+    $('#form_radius').val(1000);
+  }else{
+    $('#form_radius').val(500);
+  }
+  var params = getParams();
+  params.page = 1;
+  params.filter = 0;
+  console.log(params)
+  poiChange(params);
+})
+$('#form_ip').on('change',function(){
+  console.log($(this).val())
+  var ipval = $(this).val();
+  ip = ipval.split(':')[0];
+  port = ipval.split(':')[1];
+})
+};//window.onload结尾
+function ajax_ip(){//增加ip选项
+  var url="http://nearbysearchtest.map.wsd.com/tool/GetIPPortFromDockerByName.php?app=nearby&server=NearbyRecommender&env_code=formal&obj=NearbyRecommenderServerObj&cb=demo";
+  MapHelper.request(url,function(data) {
+       if(data&&data.IPPort&&data.IPPort.length>0){
+           ip_tianjia(data.IPPort);
+       }
+  });
+}
+var ip_all;
+var ip_cur='';
+var serviceNameObj ={
+  '0':'qzong',
+  '1':'qqgroup',
+  '2':'wechat_send',
+  '4':'qq',
+  '5':'wechat_friend'
+};
+var mdDebugInfoObj = {
+  'index_type':'索引状态类型',
+  'index_sub_type':'索引未召回原因',
+  'index_pos':'索引召回位置',
+  'index_score':'索引得分',
+  'rearrange_type':'规则重排队列',
+  'rearrange_pos':'规则重排位置',
+  'rearrange_score':'规则重排得分',
+  'artificial_special_type':'人工首页重排策略',
+  'artificial_special_pos':'人工首页重排策略位置',
+  'area_special_type':'区域打压策略',
+  'area_special_pos':'区域打压策略位置',
+  'distance_special_type':'距离排序策略',
+  'distance_special_pos':'距离排序策略位置',
+  'subway_special_type':'地铁策略',
+  'subway_special_pos':'地铁策略位置',
+  'model_type':'机器模型策略',
+  'model_pos':'机器模型策略位置',
+  'model_score':'机器模型得分',
+  'user_type':'用户策略',
+  'user_pos':'用户策略位置',
+  'user_score':'用户策略得分'
+};
+var debugListObj = {
+
+};
+function ip_tianjia(arr){
+  ip_all=[];
+  var form_ip=document.getElementById('form_ip');
+  for (var i = arr.length - 1; i >= 0; i--) {
+    var opt=document.createElement('option');
+    /*opt.id=arr[i].id;*/
+    opt.value=arr[i].IP+':'+arr[i].Port;
+    opt.innerHTML=arr[i].IP+':'+arr[i].Port;
+    form_ip.appendChild(opt);
+    ip_all.push(arr[i])
+  };
+  if(ip_cur==''){
+    ip_cur = arr[arr.length - 1]['IP']+':'+arr[arr.length - 1]['Port'];
+  }
+  ip = ip_cur.split(':')[0];
+  port = ip_cur.split(':')[1];
+  $('#form_ip').val(ip_cur);
+}
+/*通过名称获取latlng*/
+function poi_search_wenzi(poi_w,params){
+   $.ajax({
+        type:"get",
+        asycn:false,
+        url:"http://apis.map.qq.com/ws/place/v1/search?boundary=region(北京,1)",
+        data:{
+           keyword:poi_w,
+           key:"WC4BZ-TFI24-M45UM-DI57V-SVUH3-LQFUV",
+           page_size:1,
+           page_index:1,
+           output:"jsonp"
+        },
+        chche:false,
+        dataType:"jsonp",
+        jsonp:"cb",
+        jsonpCallback:"search_result",
+        success:function(json){
+        if(json&&json.data&&json.data[0]&&json.data[0].location&&json.data[0].location.lat&&json.data[0].location.lng&&json.data[0].title){
+           var lat=json.data[0].location.lat;
+           var lng=json.data[0].location.lng;
+           console.log('文字搜查经纬度结果')
+           params.lng = lng;
+           params.lat = lat;
+           search2 = params.lng;
+           search1 = params.lat;
+           console.log(params)
+            filterObj.toggle();
+            poiChange(params);
+            MapHelper.setMarkerPostion(lat, lng);
+            MapHelper.setCenter(lat, lng)
+           $('#search_lng_lat').val(json.data[0].title);
+        }else{
+          alert('抱歉,搜索名称对应经纬度的结果为空！')
+        }
+      },
+      error:function(){
+         console.log('fail_poi_search_wenzi')
+      },
+      beforeSend:function(){
+
+      },
+      complete:function(){
+        
+      }
+   });
+}
+    function $$(id) {
+      return document.getElementById(id);
+    }
+
+	function getPos(lng_lat_str)
+	{
+		var pos = lng_lat_str.split(":");
+		if (pos.length != 2)
+		{
+			pos = lng_lat_str.split(",");
+		}
+		return pos;
+	}
+
+    var poiElem = $$('poi'); 
+    var lng_lat = $$('search_lng_lat');
+    var pageElem = $$('page');
+    var debugElem = $$('click-debug-info');
+    var mdInfo = $$('md-info');
+    var form_searchmd_btn = false;//用于判断是否展示md debug信息 true代表展示
+    var formYw = $$('form_yw');
+    var pos = getPos(lng_lat.value);
+    var search1 = pos[1];//lng
+    var search2 = pos[0];//lat
+    var radiusElem = $$('form_radius');//radius半径
+    var radioList = MapHelper.toArray(document.getElementsByName('type'));
+    var radioResident = MapHelper.toArray(document.getElementsByName('resident'));
+    console.log(radioList)
+    var searchType = 5;//业务默认朋友圈签到
+    var selectRadio;
+    var page = 1;//页码
+    var num = 20;//num
+    var ip = '';//ip
+    var port = '';//port
+    var addrElem = $$('search-addr');
+    var filter = 0;//全部 
+    var bucket_id = '';
+    var user_id = '';
+    var debug_list = '';
+
+    function getClickArg() {
+      var fDistanceExp = $$('distance-exp').value;
+      var fDistanceRatio = $$('distance-ratio').value;
+      var fNormalizedTotallyClickBaseArg = $$('normal-totally-click-base-arg').value;
+      var fNormalizedTotallyClickRatioArg = $$('normal-totally-click-ratio-arg').value;
+      var fNormalizedWeeklyClickBaseArg = $$('normal-weekly-click-base-arg').value;
+      var fNormalizedWeeklyClickRatioArg = $$('normal-weekly-click-ratio-arg').value;
+      var fTotallyClickAmountScoreRatio = $$('totally-click-amount-score-ratio').value;
+      var fWeeklyClickAmountScoreRatio = $$('weekly-click-amount-score-ratio').value;
+      var fTotallyClickRateScoreRatio = $$('totally-click-rate-score-ratio').value;
+      var fWeeklyClickRateScoreRatio = $$('weekly-click-rate-score-ratio').value;
+      var fTotallyClickRatePowRatioArg = $$('totally-click-rate-pow-ratio-arg').value;
+      var fTotallyClickRateBaseArg = $$('totally-click-rate-base-arg').value;
+      var fTotallyClickRateRatioArg = $$('totally-click-rate-ratio-arg').value;
+      var fWeeklyClickRatePowRatioArg = $$('weekly-click-rate-pow-ratio-arg').value;
+      var fWeeklyClickRateBaseArg = $$('weekly-click-rate-base-arg').value;
+      var fWeeklyClickRateRatioArg = $$('weekly-click-rate-ratio-arg').value;
+      var fClickRateScoreRatioArg = $$('click-rate-score-ratio-arg').value;
+      var fClickAmountScoreRatioArg = $$('click-amount-score-ratio-arg').value;
+      var fClickAmountScoreRatio = $$('click-amount-score-ratio').value;
+      var fClickRateScoreRatio = $$('click-rate-score-ratio').value;
+      var fBaseScoreRatio = $$('base-score-ratio').value;
+
+      var strClickArg = String(fDistanceExp) + ":" + String(fDistanceRatio) + ":" + String(fNormalizedTotallyClickBaseArg) + ":" + String(fNormalizedTotallyClickRatioArg) + ":" + String(fNormalizedWeeklyClickBaseArg) + ":" + String(fNormalizedWeeklyClickRatioArg) + ":" + String(fTotallyClickAmountScoreRatio) + ":" + String(fWeeklyClickAmountScoreRatio) + ":" + String(fTotallyClickRateScoreRatio) + ":" + String(fWeeklyClickRateScoreRatio) + ":" + String(fTotallyClickRatePowRatioArg) +":" + String(fTotallyClickRateBaseArg) + ":" + String(fTotallyClickRateRatioArg) + ":" + String(fWeeklyClickRatePowRatioArg) + ":" + String(fWeeklyClickRateBaseArg) + ":" + String(fWeeklyClickRateRatioArg) + ":" + String(fClickRateScoreRatioArg) + ":" + String(fClickAmountScoreRatioArg) + ":" + String(fClickAmountScoreRatio) + ":" + String(fClickRateScoreRatio) + ":" + String(fBaseScoreRatio);
+
+      return strClickArg;
+    }
+
+    function initPage() {
+      var client = new ZeroClipboard($$('share-btn'));
+      client.on('ready', function() {
+        client.on('beforecopy', function( event ) {
+          $$('share-btn').value = 'http://' + location.host + location.pathname + '?' + MapHelper.serialize(getParams());
+          alert('参数已复制到剪贴板!!');
+        });
+      });
+
+      MapHelper.install(document.getElementById('root'), {
+        lat: 39.914850,
+        lng: 116.403765,
+        onPoiChange: function(lng, lat) {
+          var params = getParams();
+          params.lng = lng;
+          params.lat = lat;
+          search2 = lng;
+          search1 = lat;
+          lng_lat.value = search2 + ":" + search1;
+          lng_lat.title = search2 + ":" + search1;
+	        page = params.page = 1;
+          debug_list = params.debug_list = '';
+          filter = params.filter = 0;
+          console.log(searchType)
+          filterObj.toggle();
+          filterObj.highlight(filter);
+          MapHelper.cleanRect();
+          poiChange(params);
+        }
+      });
+      filterObj.install();
+      //selectRadio = radioList[0].previousSibling;
+      radioList.forEach(function(elem) {
+        elem.onclick = function() {
+         /* if (selectRadio)
+            selectRadio.className = '';
+
+          selectRadio = elem.previousSibling;
+          selectRadio.className = 'highlight';*/
+          searchType = elem.value;
+          formYw.value = searchType;
+          console.log(searchType)
+          console.log(formYw)
+      	  num = 20;
+      	  if (searchType == 1)
+      	  {
+      	    radiusElem.value = 2000;
+      	  }
+      	  else if (searchType == 4 || searchType == 5)
+      	  {
+      	    num = 20;
+      	    radiusElem.value = 1000;
+      	  }
+      	  else
+      	  {
+      	    radiusElem.value = 500;
+      	  }
+      	  params = getParams();
+      	  params.page = 1;
+      	  page = 1;
+      	  filter = 0;
+      		var pos = getPos(lng_lat.value);
+    	    params.lng = pos[0];
+	        params.lat = pos[1];
+          filterObj.toggle();
+          poiChange(params);
+        }
+      });
+      radioResident.forEach(function(elem) {
+        elem.onclick = function() {
+          radioList.forEach(function(e){
+             if(e.checked==true){
+               searchType = e.value;
+             }
+          })
+          formYw.value = searchType;
+          console.log(searchType)
+          console.log(formYw)
+          num = 20;
+          if (searchType == 1)
+          {
+            radiusElem.value = 2000;
+          }
+          else if (searchType == 4 || searchType == 5)
+          {
+            num = 20;
+            radiusElem.value = 1000;
+          }
+          else
+          {
+            radiusElem.value = 500;
+          }
+          params = getParams();
+          params.page = 1;
+          page = 1;
+          filter = 0;
+          var pos = getPos(lng_lat.value);
+          params.lng = pos[0];
+          params.lat = pos[1];
+          filterObj.toggle();
+          filterObj.highlight(filter);
+          poiChange(params);
+        }
+      });
+      //$$('mapInfo').style.height =  Math.min(document.body.clientHeight, document.documentElement.clientHeight) + 'px';
+      initCall();
+    }
+
+    //通过请求url发送检索请求
+    function initCall() {
+      var search = location.search.toString();
+      if (search) {
+        search = search.substring(1);
+        var params = {};
+        var list = search.split('&');
+        list.forEach(function(str) {
+          var token = str.split('=');
+          params[token[0]] = token[1];
+        });
+
+        var lng = params.px;
+        var lat = params.py;
+        params.lng = search2 = lng;
+        params.lat = search1 = lat;
+        lng_lat.value = search2 + ":" + search1;
+	      lng_lat.title = search2 + ":" + search1;
+	      page = params.page = (params.page || 1);
+	      num = params.num = (params.num || 20);
+        searchType = params.type = (params.searchType || 1);
+        formYw.value = searchType;
+        params.radius = radiusElem.value = (params.radius || 2000);
+        ip = params.ip = (params.ip || '');
+        port = params.port = (params.port || '');
+        ip_cur = ip+':'+port;
+        debug_list = params.debug_list = (params.debug_list || '');
+        bucket_id = params.bucket_id = (params.bucket_id || '');
+        user_id = params.user_id = (params.user_id || '');
+       /* params.jzd = (params.accuracy || '');*/
+	      filter = params.filter = (params.filter || 0);
+	      filterObj.highlight(filter);
+        filterObj.toggle();
+        poiChange(params);
+
+        for(var i = 0; i < radioList.length; i++) {
+          var elem = radioList[i];
+          if (elem.value == searchType) {
+            if (selectRadio)
+              selectRadio.className = '';
+
+            elem.checked = true;
+            selectRadio = elem.previousSibling;
+            selectRadio.className = 'highlight';
+            break;
+          }
+        }
+        MapHelper.setMarkerPostion(lat, lng);
+        MapHelper.setCenter(lat, lng);
+      }
+    }
+
+    function poiChange(params) {
+      console.log(params)
+      //http://localhost/works/search_new/serach_new/map_click_online.html?ip=10.57.18.42&port=10026&px=113.93460631370544&py=22.541296595728852&radius=1000&service_name=wechat_friend&page=1&num=20&filter=0&bucket_id=&cb=fn1492768531039&filter=0&user_id=&debug_list=16848732152730946702|11892763852114108858|17241267543370585887|13454141438554898013|7799896961886812172
+      //上面的有debuglist数据
+      //http://nearbysearchtest.map.wsd.com/tool/GetNearbyRecommenderResult.php?ip=10.57.18.42&port=10026&px=113.93460631370544&py=22.541296595728852&radius=1000&service_name=wechat_friend&page=1&num=20&filter=0&bucket_id=&cb=fn1492768531039&filter=0&user_id=&debug_list=16848732152730946702|11892763852114108858|17241267543370585887|13454141438554898013|7799896961886812172
+      console.log(params)
+      var url = 'http://nearbysearchtest.map.wsd.com/tool/GetNearbyRecommenderResult.php?px=' + params.lng + '&py=' + params.lat + '&ip='+params.ip+'&port='+params.port+'&radius='
+        + params.radius + '&service_name=' + serviceNameObj[params.type] + '&page=' + params.page + '&num=' + params.num+'&bucket_id='+params.bucket_id+'&user_id='+params.user_id+'&debug_list='+params.debug_list+'&filter='+params.filter;
+
+     /* if (params.filter)
+        url += '&filter=' + params.filter;*/
+
+      url += '&click_arg=' + getClickArg();
+      MapHelper.setCircle(params.lat, params.lng,Number(params.radius));
+      MapHelper.request(url, function(data) {
+        cleanInfo();
+        MapHelper.cleanPoi();
+        drawMapInfo(data);
+        drawDebugInfoList(data,params);
+	      drawPageInfo(data);
+	      drawDebugInfo(data);
+        if(form_searchmd_btn){
+         drawMdInfo(data);
+        }
+      });
+      //search1 = params.lat;
+      //search2 = params.lng;
+    }
+
+    function cleanInfo() {
+      poiElem.innerHTML = '';
+      pageElem.innerHTML = '';
+      debugElem.innerHTML = '';
+    }
+
+    var xmlHttp;
+    function GetXmlHttpObject(){
+      if (window.XMLHttpRequest){
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+      }else{// code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      return xmlhttp;
+    }
+
+    function getLabelsGet(url){
+      xmlHttp=GetXmlHttpObject();
+      if (xmlHttp==null){
+        alert('您的浏览器不支持AJAX！');
+        return;
+      }
+      xmlHttp.open("GET",url,false);
+      xmlHttp.send();
+      if (xmlHttp.readyState==4 && xmlHttp.status==200){
+        var d= xmlHttp.responseText;
+	return d;
+        // 处理返回结果
+                           
+      }
+
+      return "";
+    }
+
+    function drawDebugInfo(data) {
+      var list = data.poilist || [];
+      var debug_info = data.poi_debug_info || [];
+      for (var i = 0; i < list.length; i++)
+      {
+      	var poi = list[i]
+      	var poi_id = poi.uid;
+              var poi_name = poi.name;
+      	var poi_debug_info = debug_info[i].debug_info;
+              var html = '<h4><span class="num">' + (i + 1) + '</span>' + poi.name + '</h4>';
+      	html += poi_debug_info;
+      	html += '<hr width=95%></hr>';
+      	debugElem.innerHTML += html;
+      }
+    }
+    function drawMdInfo(data) {
+      var list = data.debug_list || [];
+      var mdInfostr = '';
+      if(list.length>0){
+        var info = list[0].info||{};
+        mdInfostr += '<table><thead><tr><th colspan="8">MD-Debug信息</th></tr></thead><tbody><tr>';
+        //索引
+          if(info.index_score||info.index_score==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['index_score']+'</td><td>'+(info['index_score']==0?info['index_score']:info['index_score'].toFixed(5))+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.index_type||info.index_type==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['index_type']+'</td><td>'+info['index_type']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.index_sub_type||info.index_sub_type==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['index_sub_type']+'</td><td>'+info['index_sub_type']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.index_pos||info.index_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['index_pos']+'</td><td>'+info['index_pos']+'</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }
+          //规则
+          if(info.rearrange_type||info.rearrange_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['rearrange_type']+'</td><td>'+info['rearrange_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.rearrange_pos||info.rearrange_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['rearrange_pos']+'</td><td>'+info['rearrange_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.rearrange_score||info.rearrange_score==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['rearrange_score']+'</td><td>'+(info['rearrange_score']==0?info['rearrange_score']:info['rearrange_score'].toFixed(5))+'</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }
+          //人工
+          if(info.artificial_special_type||info.artificial_special_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['artificial_special_type']+'</td><td>'+info['artificial_special_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.artificial_special_pos||info.artificial_special_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['artificial_special_pos']+'</td><td>'+info['artificial_special_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.area_special_type||info.area_special_type==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['area_special_type']+'</td><td>'+info['area_special_type']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.area_special_pos||info.area_special_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['area_special_pos']+'</td><td>'+info['area_special_pos']+'</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><tr>';
+          }
+          //距离
+          if(info.distance_special_type||info.distance_special_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['distance_special_type']+'</td><td>'+info['distance_special_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.distance_special_pos||info.distance_special_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['distance_special_pos']+'</td><td>'+info['distance_special_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.subway_special_type||info.subway_special_type==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['subway_special_type']+'</td><td>'+info['subway_special_type']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.subway_special_pos||info.subway_special_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['subway_special_pos']+'</td><td>'+info['subway_special_pos']+'</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><tr>';
+          }
+          //机器
+          if(info.model_type||info.model_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['model_type']+'</td><td>'+info['model_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.model_pos||info.model_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['model_pos']+'</td><td>'+info['model_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.model_score||info.model_score==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['model_score']+'</td><td>'+(info['model_score']==0?info['model_score']:info['rearrange_score'].toFixed(5))+'</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }
+           //用户
+          if(info.user_type||info.user_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['user_type']+'</td><td>'+info['user_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.user_pos||info.user_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['user_pos']+'</td><td>'+info['user_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.user_score||info.user_score==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['user_score']+'</td><td>'+(info['user_score']==0?info['user_score']:info['rearrange_score'].toFixed(5))+'</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }
+
+        /*var n=0;
+        var m=0;
+        for(var o in info){
+          if(info.hasOwnProperty(o)){
+             if(!(n%4)){
+               if(n===0){
+                mdInfostr += '<td>'+mdDebugInfoObj[o]+'</td><td>'+info[o]+'</td>';
+               }else{
+                mdInfostr += '</tr><tr><td>'+mdDebugInfoObj[o]+'</td><td>'+info[o]+'</td>';
+               }
+             }else{
+               mdInfostr += '<td>'+mdDebugInfoObj[o]+'</td><td>'+info[o]+'</td>';
+             }
+             m += 1;
+          }
+          n++;
+        }
+        if(m%4){
+           var l = (4-m%4)*2;
+           for(var i=0;i<l;i++){
+             mdInfostr += '<td>&nbsp;</td>';
+           }
+        }*/
+        mdInfostr += '</tbody></table>';
+        mdInfo.innerHTML = mdInfostr;
+      }else{
+        mdInfostr += '<p class="" style="text-align:center;color:#f40;">暂无此MD-Debug信息,请更换其他条件查询！</p>';
+        mdInfo.innerHTML = mdInfostr;
+        setTimeout(function(){
+          mdInfo.innerHTML = '';
+        },4000);
+      }
+      
+    }
+
+    function processCount(count) {
+		/*
+		if (count < 1000)
+		{
+			return count;
+		}
+		else
+		{
+			return Math.round(count/1000) + "k";
+		}
+		*/
+		return count;
+	}
+  function drawDebugInfoList(data,params) {
+      var list = data.poilist || [];  
+      var debug_info = data.poi_debug_info || [];
+     var url = 'http://nearbysearchtest.map.wsd.com/tool/GetNearbyRecommenderResult.php?px=' + params.lng + '&py=' + params.lat + '&ip='+params.ip+'&port='+params.port+'&radius='
+        + params.radius + '&service_name=' + serviceNameObj[params.type] + '&page=' + params.page + '&num=' + params.num+'&bucket_id='+params.bucket_id+'&user_id='+params.user_id+'&filter='+params.filter+'&debug_list=';
+      for (var i = 0; i < list.length; i++) {
+        if (i > 0)
+        {
+          url += "|";
+        }
+        var md = list[i].uid;
+        url += md;
+      }
+    url += '&click_arg=' + getClickArg();
+    MapHelper.request(url, function(click_info){
+      console.log(click_info)
+      if(click_info.debug_list&&click_info.debug_list.length&&click_info.debug_list.length>0){
+        debugListObj = {};
+        var arr = click_info.debug_list;
+        for(var i = 0;i<arr.length;i++){
+           debugListObj[arr[i].md] = arr[i].info;
+        }
+        $(document).on('mouseover','#poi a',function(){
+          $('#poilist_mddiv').css('display','block');
+          var id = $(this).attr('data-rel');
+          console.log(debugListObj[id])
+          var info = debugListObj[id];
+          var mdInfostr = '';
+          mdInfostr += '<table><thead><tr><th colspan="8">MD-Debug信息</th></tr></thead><tbody><tr>';
+          //索引
+          if(info.index_score||info.index_score==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['index_score']+'</td><td>'+(info['index_score']==0?info['index_score']:info['index_score'].toFixed(5))+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.index_type||info.index_type==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['index_type']+'</td><td>'+info['index_type']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.index_sub_type||info.index_sub_type==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['index_sub_type']+'</td><td>'+info['index_sub_type']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.index_pos||info.index_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['index_pos']+'</td><td>'+info['index_pos']+'</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }
+          //规则
+          if(info.rearrange_type||info.rearrange_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['rearrange_type']+'</td><td>'+info['rearrange_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.rearrange_pos||info.rearrange_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['rearrange_pos']+'</td><td>'+info['rearrange_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.rearrange_score||info.rearrange_score==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['rearrange_score']+'</td><td>'+(info['rearrange_score']==0?info['rearrange_score']:info['rearrange_score'].toFixed(5))+'</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }
+          //人工
+          if(info.artificial_special_type||info.artificial_special_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['artificial_special_type']+'</td><td>'+info['artificial_special_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.artificial_special_pos||info.artificial_special_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['artificial_special_pos']+'</td><td>'+info['artificial_special_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.area_special_type||info.area_special_type==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['area_special_type']+'</td><td>'+info['area_special_type']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.area_special_pos||info.area_special_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['area_special_pos']+'</td><td>'+info['area_special_pos']+'</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><tr>';
+          }
+          //距离
+          if(info.distance_special_type||info.distance_special_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['distance_special_type']+'</td><td>'+info['distance_special_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.distance_special_pos||info.distance_special_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['distance_special_pos']+'</td><td>'+info['distance_special_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.subway_special_type||info.subway_special_type==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['subway_special_type']+'</td><td>'+info['subway_special_type']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.subway_special_pos||info.subway_special_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['subway_special_pos']+'</td><td>'+info['subway_special_pos']+'</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><tr>';
+          }
+          //机器
+          if(info.model_type||info.model_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['model_type']+'</td><td>'+info['model_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.model_pos||info.model_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['model_pos']+'</td><td>'+info['model_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.model_score||info.model_score==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['model_score']+'</td><td>'+(info['model_score']==0?info['model_score']:info['rearrange_score'].toFixed(5))+'</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }
+           //用户
+          if(info.user_type||info.user_type==0){
+            mdInfostr += '<tr><td>'+mdDebugInfoObj['user_type']+'</td><td>'+info['user_type']+'</td>';
+          }else{
+            mdInfostr += '<tr><td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.user_pos||info.user_pos==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['user_pos']+'</td><td>'+info['user_pos']+'</td>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td>';
+          }
+          if(info.user_score||info.user_score==0){
+            mdInfostr += '<td>'+mdDebugInfoObj['user_score']+'</td><td>'+(info['user_score']==0?info['user_score']:info['rearrange_score'].toFixed(5))+'</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }else{
+            mdInfostr += '<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>';
+          }
+
+          mdInfostr += '</tbody></table>';
+          $('#poilist_mddiv').html(mdInfostr);
+          $(this).on('mouseout',function(){
+            $('#poilist_mddiv').html('');
+            $('#poilist_mddiv').css('display','none');
+          })
+        });
+      }else{
+        $(document).on('mouseover','#poi a',function(){
+          $('#poilist_mddiv').css('display','block');
+          var mdInfostr ='<table><thead><tr><th colspan="8">MD-Debug信息</th></tr></thead><tbody><tr><td colspan="8">暂无此MD-Debug信息</td></tr></tbody></table>';
+          $('#poilist_mddiv').html(mdInfostr);
+          $(this).on('mouseout',function(){
+            $('#poilist_mddiv').html('');
+            $('#poilist_mddiv').css('display','none');
+          })
+        });
+      }
+    });
+    }
+    function drawMapInfo(data) {
+      var list = data.poilist || [];  
+      var debug_info = data.poi_debug_info || [];
+      //var url = 'http://10.163.138.100/search_test/get_poi_click_info.php?poi_id=(';
+	  var url = "http://10.173.142.164:8080/map_120/data_total.php?source=nearby&md="
+      for (var i = 0; i < list.length; i++) {
+      	if (i > 0)
+      	{
+      	  url += "|";
+      	}
+      	var md = list[i].uid;
+      	url += md;
+      }
+	  var json_str = "";
+	  MapHelper.request(url, function(click_info){
+      var html = '<div class="poiList"><div id="poilist_mddiv"></div>';
+      html += '<table>';
+      html += '<tr class="tr-title">';
+      html += '<td class="td-item-base" style="WORD-WRAP: break-word width:5%">序号</td>';
+      //html += '<td class="td-item-base" style="WORD-WRAP: break-word width:10%">POI ID</td>';
+      html += '<td class="td-item-base" style="WORD-WRAP: break-word width:10%">标题</td>';
+      html += '<td class="td-item-base" style="WORD-WRAP: break-word width:5%">Rank</td>';
+      html += '<td class="td-item-base" style="WORD-WRAP: break-word width:5%">距离</td>';
+      html += '<td class="td-item-base" style="WORD-WRAP: break-word width:10%">类型</td>';
+      html += '<td class="td-item-base" style="WORD-WRAP: break-word width:5%">面地图</td>';
+	  html += '<td class="td-item-click" style="WORD-WRAP: break-word width:5%">pv</td>';
+	  html += '<td class="td-item-click" style="WORD-WRAP: break-word width:5%">cl</td>';
+	  html += '<td class="td-item-click" style="WORD-WRAP: break-word width:5%">ctr</td>';
+      html += '<td class="td-item-merge" style="WORD-WRAP: break-word width:5%">总cl</td>';
+      html += '<td class="td-item-merge" style="WORD-WRAP: break-word width:5%">周cl</td>';
+      html += '<td class="td-item-rt" style="WORD-WRAP: break-word width:5%">区总pv</td>';
+      html += '<td class="td-item-rt" style="WORD-WRAP: break-word width:5%">区总cl</td>';
+      html += '<td class="td-item-rt" style="WORD-WRAP: break-word width:5%">区总ctr</td>';
+      html += '<td class="td-item-rw" style="WORD-WRAP: break-word width:5%">区周pv</td>';
+      html += '<td class="td-item-rw" style="WORD-WRAP: break-word width:5%">区周cl</td>';
+      html += '<td class="td-item-rw" style="WORD-WRAP: break-word width:5%">区周ctr</td>';
+      html += '<td class="td-item-score" style="WORD-WRAP: break-word width:5%">cl得分</td>';
+      html += '<td class="td-item-score" style="WORD-WRAP: break-word width:5%">ctr得分</td>';
+      html += '<td class="td-item-score" style="WORD-WRAP: break-word width:5%">base得分</td>';
+      html += '<td class="td-item-score" style="WORD-WRAP: break-word width:5%">total得分</td>';
+      //html += '<td style="WORD-WRAP: break-word width:10%">展现量</td>';
+      //html += '<td style="WORD-WRAP: break-word width:10%">点击量</td>';
+      //html += '<td style="WORD-WRAP: break-word width:10%">点击率</td>';
+      html += '</tr>';
+
+      for (var i = 0; i < list.length; i++) {
+        var poi = list[i];
+	//var poi_info = poi_info_list[i];
+	var poi_rank = 0;
+	var face_data = "No";
+	var click_power = 0.0;
+	//var poi_show = poi_info.poi_show_quantity;
+	//var poi_click = poi_info.poi_click_quantity;
+	var poi_avg_pos = 0.0;
+	//var poi_click_rate = poi_info.poi_click_rate;
+	var poi_id = poi.uid;
+	var poi_click_debug_info = new Array(0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.000000, 0.000000, 0.000000, 0.000000);	
+	//var poi_click_amount = click_info[i]["qq"]["click_total_num"];
+	//var poi_appearance_amount = click_info[i]["qq"]["show_total_num"];
+	var poi_click_amount = processCount(click_info[i]["qq"]["click_total_num"]);
+	var poi_appearance_amount = processCount(click_info[i]["qq"]["show_total_num"]);
+	var poi_click_rate = click_info[i]["qq"]["click_rate"];
+	if (searchType == 5)
+	{
+		poi_click_amount = processCount(click_info[i]["friend"]["click_total_num"]);
+		poi_appearance_amount = processCount(click_info[i]["friend"]["show_total_num"]);
+		poi_click_rate = click_info[i]["friend"]["click_rate"];
+	}
+	if (debug_info.length > i)
+	{
+	  poi_rank = debug_info[i].poi_rank;
+	  click_power = debug_info[i].click_power;
+	  if (debug_info[i].is_face_data == 1)
+	  {
+	    face_data = "Yes";
+	  }
+ 	  poi_click_debug_info = debug_info[i].click_debug_info.split("\t");
+	}
+        html += '<tr class="tr-item">';
+        html += '<td class="td-item-base" style="WORD-WRAP: break-word">' + (i + 1) + '</td>';
+        html += '<td class="td-item-base" style="WORD-WRAP: break-word"><a href=http://map.bigdata.wsd.com/dataCenter/poiView/?id='+ poi.uid + ' target="_blank" data-rel="'+poi.uid+'">' + poi.name + '</a></td>';
+        //html += '<td style="WORD-WRAP: break-word">' + poi.name +'</td>';
+        html += '<td class="td-item-base" style="WORD-WRAP: break-word">' + poi_rank + '</td>';
+        html += '<td class="td-item-base" style="WORD-WRAP: break-word">' + poi.dist + '</td>';
+        html += '<td class="td-item-base" style="WORD-WRAP: break-word">' + poi.catalog + '</td>';
+        html += '<td class="td-item-base" style="WORD-WRAP: break-word">' + face_data + '</td>';
+		html += '<td class="td-item-click" style="WORD-WRAP: break-word">' + poi_appearance_amount + '</td>';
+		html += '<td class="td-item-click style="WORD-WRAP: break-word">' + poi_click_amount + '</td>';
+		html += '<td class="td-item-click" style="WORD-WRAP: break-word">' + poi_click_rate + '</td>';
+	html += '<td class="td-item-merge" style="WORD-WRAP: break-word" align=center>' + processCount(poi_click_debug_info[0]) + '</td>';
+	html += '<td class="td-item-merge" style="WORD-WRAP: break-word" align=center>' + processCount(poi_click_debug_info[1]) + '</td>';
+	html += '<td class="td-item-rt" style="WORD-WRAP: break-word" align=center>' + processCount(parseFloat(poi_click_debug_info[3]).toFixed(0)) + '</td>';
+	html += '<td class="td-item-rt" style="WORD-WRAP: break-word" align=center>' + processCount(parseFloat(poi_click_debug_info[2]).toFixed(0)) + '</td>';
+	html += '<td class="td-item-rt" style="WORD-WRAP: break-word" align=center>' + (parseFloat(poi_click_debug_info[6]) * 100).toFixed(2) + '%</td>';
+	html += '<td class="td-item-rw" style="WORD-WRAP: break-word" align=center>' + processCount(parseFloat(poi_click_debug_info[5]).toFixed(0)) + '</td>';
+	html += '<td class="td-item-rw" style="WORD-WRAP: break-word" align=center>' + processCount(parseFloat(poi_click_debug_info[4]).toFixed(0)) + '</td>';
+	html += '<td class="td-item-rw" style="WORD-WRAP: break-word" align=center>' + (parseFloat(poi_click_debug_info[7]) * 100).toFixed(2) + '%</td>';
+	html += '<td class="td-item-score" style="WORD-WRAP: break-word" align=center>' + parseFloat(poi_click_debug_info[8]).toFixed(3) + '</td>';
+	html += '<td class="td-item-score" style="WORD-WRAP: break-word" align=center>' + parseFloat(poi_click_debug_info[9]).toFixed(3) + '</td>';
+	html += '<td class="td-item-score" style="WORD-WRAP: break-word" align=center>' + parseFloat(poi_click_debug_info[10]).toFixed(3) + '</td>';
+	html += '<td class="td-item-score" style="WORD-WRAP: break-word" align=center>' + parseFloat(poi_click_debug_info[11]).toFixed(3) + '</td>';
+        html += '</tr>';
+
+        MapHelper.drawPoi(poi.longitude, poi.latitude, i + 1,poi.uid);
+      }
+      html += '</table></div>';
+      poiElem.innerHTML += html;
+	  });
+      //var json_str = getLabelsGet(url);
+    }
+
+    function drawPageInfo(data){
+      var base_url = 'http://' + location.host + location.pathname + '?';
+      var total_poi_num = data.total_poi_num;
+      var page_num = Math.ceil(total_poi_num/num);
+      var html = '<ul class="pagelist">';
+      var params = getParams();
+      cur_page = page;
+      params.page = 1;
+      var cur_url = base_url + MapHelper.serialize(params);
+      if (cur_page == 1)
+      {
+        html += '<li class="nohref">首页</a></li>';
+      }
+      else
+      {
+        html += '<li><a href="' + cur_url + '">首页</a></li>';
+      }
+      if (cur_page > 1)
+      {
+	params.page = eval(cur_page - 1);
+        cur_url = base_url + MapHelper.serialize(params);
+        html += '<li><a href="' + cur_url + '">上一页</a></li>';
+      }
+      //计算显示页数, 一次最多显示10页
+      var begin_page=1;
+      var end_page=10;
+      if (cur_page > 5)
+      {
+	begin_page = cur_page - 4;
+	if (begin_page <= 0)
+	{
+	  begin_page = 1;
+	}
+	end_page = parseInt(cur_page) + 5;
+      }
+      if (cur_page > page_num - 5)
+      {
+	end_page = page_num;
+	begin_page = page_num - 9;
+	if (begin_page <= 0)
+	{
+	  begin_page = 1;
+	}
+      }
+      if (page_num < end_page)
+      {
+	end_page = page_num;
+      }
+      for (var i = begin_page; i < end_page + 1; i++)
+      {
+	if (cur_page == i)
+	{
+	  html += '<li class="on">' + i + '</li>'
+	}
+	else
+	{
+	  params.page = i;
+          cur_url = base_url + MapHelper.serialize(params);
+          html += '<li><a href="' + cur_url + '">' + i + '</a></li>';
+	}
+      }
+      if (cur_page < page_num)
+      {
+	params.page = eval(parseInt(cur_page) + 1);
+        cur_url = base_url + MapHelper.serialize(params);
+        html += '<li><a href="' + cur_url + '">下一页</a></li>';
+      }
+      params.page = page_num;
+      cur_url = base_url + MapHelper.serialize(params);
+      if (cur_page == page_num)
+      {
+        html += '<li class="nohref">末页</a></li></ul>';
+      }
+      else
+      {
+        html += '<li><a href="' + cur_url + '">末页</a></li></ul>';
+      }
+      //poiElem.innerHTML += html;
+      pageElem.innerHTML += html;
+    }
+
+    var filterObj = {
+      node: $$('poiFilter'),
+      mq_node: $$('MQPoiFilter'),
+
+      activeELem: null,
+
+      show: function() {
+      	if (searchType == 0)
+      	{
+      	    this.mq_node.style.display = 'none';
+      	    this.node.style.display = 'block';
+      	}
+      	else if (searchType == 4)
+      	{
+      	    this.node.style.display = 'none';
+      	    this.mq_node.style.display = 'block';
+      	}
+      },
+
+      hide: function() {
+      	this.node.style.display = 'none';
+      	this.mq_node.style.display = 'none';
+      },
+
+      //切换tab时进行检索
+      selectTab: function(elem) {
+        this.clean();
+        elem.className = 'active';
+        this.activeELem = elem;
+
+      	MapHelper.toArray(this.node.children).forEach(function(elem) {
+      	  if (filter == elem.getAttribute('data-value'))
+      	  {
+      	    elem.className = '';
+       	  }
+      	});
+
+      	MapHelper.toArray(this.mq_node.children).forEach(function(elem) {
+      	  if (filter == elem.getAttribute('data-value'))
+      	  {
+      	    elem.className = '';
+       	  }
+      	});
+
+        var params = getParams();
+        filter = params.filter = elem.getAttribute('data-value');
+      	params.page = 1;
+       	page = 1;
+        poiChange(params);
+      },
+
+      recover: function() {
+        var  activeELem = this.node.firstChild;
+      	if (searchType == 4)
+      	{
+      	  activeElem = this.mq_node.firstChild;
+      	}
+        this.activeELem = activeELem;
+        activeELem.className = 'active';
+      },
+
+      clean: function() {
+        var activeELem = this.activeELem;
+        if (activeELem) {
+          activeELem.className = '';
+          activeELem = null;
+        }
+      },
+
+      toggle: function() {
+        this.clean();
+        this.recover();
+        (searchType == 4 || searchType == 0) ? this.show() : this.hide();
+      },
+
+      highlight: function(filter) {
+      	MapHelper.toArray(this.node.children).forEach(function(elem) {
+      	  if (filter == elem.getAttribute('data-value'))
+      	  {
+      	    elem.className = 'active';
+       	  }
+      	});
+      	MapHelper.toArray(this.mq_node.children).forEach(function(elem) {
+      	  if (filter == elem.getAttribute('data-value'))
+      	  {
+      	    elem.className = 'active';
+       	  }
+      	});
+      },
+
+      install: function() {
+        var that = this;
+        MapHelper.toArray(this.node.children).forEach(function(elem) {
+          elem.onclick = function() {
+            that.selectTab(elem);
+            return false;
+          };
+        });
+        MapHelper.toArray(this.mq_node.children).forEach(function(elem) {
+          elem.onclick = function() {
+            that.selectTab(elem);
+            return false;
+          };
+        });
+      }
+    };
+
+    function getParams() { 
+      return {
+        lat: search1,
+        lng: search2,
+        ip: ip,
+        port: port,
+        type: searchType || 5,
+        radius: radiusElem.value || 2000,
+	      page: page || 1,
+	      num: num || 20,
+	      filter: filter,
+        bucket_id: bucket_id,
+        user_id: user_id,
+        debug_list: debug_list
+      };
+    }
+
+    //点击search按钮时发送检索请求
+    function search() {
+      var params = getParams();
+      //var pos = lng_lat.value.split(":");
+      var pos = getPos(lng_lat.value);
+      search1 = pos[1];
+      search2 = pos[0];
+      var lat = params.lat = search1;
+      var lng = params.lng = search2;
+      if (!lat || !lng) {
+        alert('请输入完整坐标');
+        return;
+      }
+      filterObj.toggle();
+      params.page = 1;
+      page = 1;
+      poiChange(params);
+      MapHelper.setMarkerPostion(lat, lng);
+      MapHelper.setCenter(lat, lng);
+    }
+
+    //根据地址查询poi
+    function findAddr() {
+      var addr = addrElem.value;
+      addr && MapHelper.request('http://10.170.21.159:8080/cgi-bin/geo_client_cgi?addr=' + addr, function(ret) {
+	var ret = ret.detail;
+	var lng = ret.pointx;
+	var lat = ret.pointy;
+
+	if (lng && lat) {
+	  var params = getParams();
+	  params.lat = lat;
+	  params.lng = lng;
+	  params.page = 1;
+	  lng_lat.value = lng + ":" + lat;
+	  page = 1;
+	  poiChange(params);
+	  MapHelper.setMarkerPostion(lat, lng);
+	  MapHelper.setCenter(lat, lng);
+	  addrElem.value = '';
+	} else
+	  alert('请输入正确的位置!');
+      });
+    }
+
+    initPage();
+    ajax_ip();
+
+  </script>
+</body
+
+</html>
